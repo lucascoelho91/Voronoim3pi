@@ -24,10 +24,10 @@ classdef m3piController < handle
             
             function robot = m3piController(m3, kvel, kwg, dp, tolp, maxvp, maxwp)
                 if nargin < 7
-                    maxvp = 0.5;
+                    tolp = 0.1;
                 end
                 if nargin < 6 
-                    maxwp = 0.5;
+                    tolp = 0.1;
                 end
                 if nargin < 5 
                     tolp = 0.1;
@@ -46,8 +46,6 @@ classdef m3piController < handle
                 robot.m3pi = m3;
                 robot.d = dp;
                 robot.tol = tolp;
-                robot.maxv = maxvp;
-                robot.maxw = maxwp;
             end
             
             function setPose(robot, x, y, t)
@@ -70,10 +68,10 @@ classdef m3piController < handle
                 v = robot.kv*(cos(robot.theta)*robot.errx + sin(robot.theta)*robot.erry);
                 w = robot.kw*(-sin(robot.theta)*robot.errx/robot.d + cos(robot.theta)*robot.erry/robot.d);
                 
-                if abs(v) > robot.maxv
+                if abs(v) > 0.5
                     v = 0.5 * v/abs(v);
                 end
-                if abs(w) > robot.maxw
+                if abs(w) > 0.5
                     w = 0.5 * w/abs(w);
                 end
                 robot.m3pi.sendSpeed(v, w);
@@ -85,10 +83,10 @@ classdef m3piController < handle
                [v, w] = robot.xyTovw(xdot, ydot);
                v = robot.kv * v;
                w = robot.kw * w;
-               if abs(v) > robot.maxv
+               if abs(v) > 0.5
                     v = 0.5 * v/abs(v);
                 end
-                if abs(w) > robot.maxw
+                if abs(w) > 0.5
                     w = 0.5 * w/abs(w);
                 end
                robot.m3pi.sendSpeed(v, w);
