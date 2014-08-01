@@ -108,7 +108,13 @@ for i = 1:n
     bot(i).controller.controlSpeedDiff(bot(i).xdot, bot(i).ydot);
     
     
-    % Update weightings
+    if ~Env.SIMULATION
+        bot(i).x = max(Env.stol, min(Env.bdr(3,1)-Env.stol, bot(i).x));
+        bot(i).y = max(Env.stol, min(Env.bdr(3,2)-Env.stol, bot(i).y));
+        bot(i).robot.setPose(bot(i).x, bot(i).y);
+    end
+        
+    %Update weightings
     bot(i).wt = bot(i).wt + bot(i).wdot*ts;
     if bot(i).wt < bot(i).minwt
         bot(i).wt = bot(i).minwt;
@@ -125,3 +131,4 @@ for i = 1:n
     bot(i).cost = intCost(Env,bot(i));
     
 end
+fprintf('\n');

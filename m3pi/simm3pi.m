@@ -36,6 +36,10 @@ classdef simm3pi < handle
             v = p(1);
         end
         
+        function p = SetPose(r, xp, yp)
+            r.x = xp;
+            x.y = yp;
+        end
         
 
     end

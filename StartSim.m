@@ -19,26 +19,26 @@ addpath '@timetic'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    %SIMULATION = 1;
+    SIMULATION = 1;
 
-    SIMULATION = 0;
+    %SIMULATION = 0;
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %% NUMBER OF ROBOTS
-n  = 3; 
+n  = 9; 
 
 %% size environment
 sizeEnvX = 4;
-sizeEnvY = 3;
+sizeEnvY = 5;
 
 %% WEIGHTINGS
 wt = ones(1,n);
 % wt(7) = 2;
-% wt(9) = 1.5;
-% wt(2) = 2;
+%wt(9) = 1.5;
+%wt(2) = 2;
 
 %% MALICIOUS
 mal = zeros(1,n);   
@@ -48,9 +48,10 @@ mal = zeros(1,n);
 % 3 = escape
 % 4 = reduced speed (efficiency)
 % 5 = K 
-% mal(5) = 1; 
+mal(5) = 5; 
 % mal(2) = 4;
-%mal(2) = 5;
+mal(2) = 5;
+mal(4)=5;
 
 %% efficiency
 eff = ones(1, n);
@@ -60,7 +61,9 @@ for i=1:n
     K{i} = zeros(2);
 end
 % 
-% K{2} = [0.8 0;0 0.2];
+K{2} = [0.8 0;0 0.2];
+K{5} = [-0.8 0;0 -0.2];
+K{4} = [-0.5 0;0 -0.5];
 
 %% SENSOR FUNCTION PARAMETERS
 h = ones(1,n);
@@ -71,32 +74,47 @@ p0(:, 2) = sizeEnvY*rand(n,1);
 t0 = -pi + rand(n, 1)*2*pi;
 
 %% CONTROL GAIN
-kp = 1;
-kv = 2;
-kw = 0.005;
-d = 0.05;
-tol = 0.2;
 
-maxv = 0.3;
-maxw = 0.3;
+if SIMULATION
+    kp = 1;
+    kw = 2;
+    kv = 2;
+    kwt = 0.5;
+    d = 0.05;
+    tol = 0.2;
+
+    maxv = 10;
+    maxw = 10;
+else
+    kp = 1;
+    kw = 0.5;
+    kv = 2;
+    kwt = 0.005;
+    d = 0.05;
+    tol = 0.2;
+
+    maxv = 0.3;
+    maxw = 0.3;
+
+end
 
 
 %% Define the environment
 Env.n = n;
 Env.bdr = [0 0; 0 sizeEnvY; sizeEnvX sizeEnvY; sizeEnvX 0];         % Bounding box
 Env.axes = [min(Env.bdr(:,1)) max(Env.bdr(:,1)) min(Env.bdr(:,2)) max(Env.bdr(:,2))];
-Env.peaks = [1 1; 3 3];                      % Peak of phi function ('gamma')
-Env.strength = [100 ; 100];              % Strength ('alpha')
-Env.offset = [0 ; 0];                     % offset
-Env.stdev = [.2 ; .2]*max(max(Env.bdr));  % Standard Deviation ('beta')
+Env.peaks = [1 1;];                      % Peak of phi function ('gamma')
+Env.strength = [100];              % Strength ('alpha')
+Env.offset = [0 ;];                     % offset
+Env.stdev = [.2 ;]*max(max(Env.bdr));  % Standard Deviation ('beta')
 Env.varphi = 0;                         % Variable phi function?
 Env.stol = 0.2;   % barrier
 Env.SIMULATION = SIMULATION;
 Env.rate = 0.1;
-Env.watch = timetic
+Env.watch = timetic;
 
 %% Also define the animation constants
-Env.mov = 0;            % Write movi e using vidObj
+Env.mov = 1;            % Write movi e using vidObj
 Env.jpg = 0;            % Write movie as series of jpegs
 Env.mname = 'variableweight';         % Movie name
 Env.anim = 1;           % Animate?
@@ -145,11 +163,10 @@ if ~SIMULATION
     end
 end
 
-if ~SIMULATION
-    for i=1:n
-        c(i) = m3piController(r(i), kv, kw, d, tol, maxv, maxw);
-    end
+for i=1:n
+    c(i) = m3piController(r(i), kv, kwt, d, tol, maxv, maxw);
 end
+
 
 % Distribute variables to the n robots
 bot = struct(); % Create the empty structure

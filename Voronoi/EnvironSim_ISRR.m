@@ -222,6 +222,10 @@ while strcmp(simgo,'run') == 1 && t < tfinal
 %         bot(5).mal=0;
         bot(2).mal=0;
         bot(2).K = zeros(2);
+        bot(5).mal=0;
+        bot(5).K = zeros(2);
+        bot(4).K = zeros(2);
+
     end
 
 end
