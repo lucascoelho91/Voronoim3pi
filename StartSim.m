@@ -76,25 +76,25 @@ t0 = -pi + rand(n, 1)*2*pi;
 %% CONTROL GAIN
 
 if SIMULATION
-    kp = 1;
-    kw = 2;
-    kv = 2;
-    kwt = 0.5;
-    d = 0.05;
-    tol = 0.2;
+    kp = 1;    % kp Voronoi
+    kw = 2;    % kw weightlings controller
+    kv = 2;    % kv point offset
+    kwt = 0.5; % kw point offset
+    d = 0.05;  % d point offset
+    tol = 0.2; % radius 
 
-    maxv = 10;
-    maxw = 10;
+    maxv = 10; % max linear speed
+    maxw = 10; % max angular speed
 else
-    kp = 1;
-    kw = 0.5;
-    kv = 2;
-    kwt = 0.005;
-    d = 0.05;
-    tol = 0.2;
+    kp = 1;       % kp Voronoi
+    kw = 0.5;     % kw weightlings controller
+    kv = 2;       % kv point offset
+    kwt = 0.005;  % kw point offset
+    d = 0.05;     % d point offset
+    tol = 0.2;    % radius
 
-    maxv = 0.3;
-    maxw = 0.3;
+    maxv = 0.3;   % max linear speed
+    maxw = 0.3;   % max angular speed
 
 end
 
@@ -128,7 +128,7 @@ Env.plot = 1;           % plot cost
 Env.wdot = 1;           % calculate wdot
 
 
-%% Optitrack variable
+%% Optitrack 
 if ~SIMULATION
     Env.frame = 'XYZ+ Plane';
     Env.opti = optiTrackSetup(3000);
@@ -157,7 +157,6 @@ end
 
 if ~SIMULATION
     r(1).connect();
-
     for i=2:n
         r(i).setSerialPort(r(1).serialPort);
     end
