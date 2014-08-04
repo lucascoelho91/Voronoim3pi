@@ -108,7 +108,11 @@ for i = 1:n
     bot(i).controller.controlSpeedDiff(bot(i).xdot, bot(i).ydot);
     
     
-    if ~Env.SIMULATION
+     if Env.SIMULATION
+        p = bot(i).robot.getPose();
+        bot(i).x = p(1);
+        bot(i).y = p(2);
+        bot(i).theta = p(3);
         bot(i).x = max(Env.stol, min(Env.bdr(3,1)-Env.stol, bot(i).x));
         bot(i).y = max(Env.stol, min(Env.bdr(3,2)-Env.stol, bot(i).y));
         bot(i).robot.setPose(bot(i).x, bot(i).y);

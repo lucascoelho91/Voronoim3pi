@@ -28,11 +28,11 @@ addpath '@timetic'
 
 
 %% NUMBER OF ROBOTS
-n  = 9; 
+n  = 5; 
 
 %% size environment
-sizeEnvX = 4;
-sizeEnvY = 5;
+sizeEnvX = 3;
+sizeEnvY = 4;
 
 %% WEIGHTINGS
 wt = ones(1,n);
@@ -48,22 +48,22 @@ mal = zeros(1,n);
 % 3 = escape
 % 4 = reduced speed (efficiency)
 % 5 = K 
-mal(5) = 5; 
+%mal(5) = 5; 
 % mal(2) = 4;
-mal(2) = 5;
-mal(4)=5;
+%mal(2) = 5;
+mal(4)=3;
 
 %% efficiency
-eff = ones(1, n);
+eff = ones(1, n);  % efficiency reduces the speed (same as using a K matrix = [-eff 0; 0 -eff]
 
 K = cell(n,1);
 for i=1:n
     K{i} = zeros(2);
 end
 % 
-K{2} = [0.8 0;0 0.2];
-K{5} = [-0.8 0;0 -0.2];
-K{4} = [-0.5 0;0 -0.5];
+%K{2} = [0.8 0;0 0.2];
+%K{5} = [-0.8 0;0 -0.2];
+%K{4} = [-1.2 0;0 -1.2];
 
 %% SENSOR FUNCTION PARAMETERS
 h = ones(1,n);
@@ -103,10 +103,10 @@ end
 Env.n = n;
 Env.bdr = [0 0; 0 sizeEnvY; sizeEnvX sizeEnvY; sizeEnvX 0];         % Bounding box
 Env.axes = [min(Env.bdr(:,1)) max(Env.bdr(:,1)) min(Env.bdr(:,2)) max(Env.bdr(:,2))];
-Env.peaks = [1 1;];                      % Peak of phi function ('gamma')
-Env.strength = [100];              % Strength ('alpha')
-Env.offset = [0 ;];                     % offset
-Env.stdev = [.2 ;]*max(max(Env.bdr));  % Standard Deviation ('beta')
+Env.peaks = [1 1; 2 3];                      % Peak of phi function ('gamma')
+Env.strength = [100, 100];              % Strength ('alpha')
+Env.offset = [0;0];                     % offset
+Env.stdev = [0.2 ; 0.2]*max(max(Env.bdr));  % Standard Deviation ('beta')
 Env.varphi = 0;                         % Variable phi function?
 Env.stol = 0.2;   % barrier
 Env.SIMULATION = SIMULATION;
@@ -149,7 +149,7 @@ end
 %% init robots
 for i=1:n
     if SIMULATION
-        r(i) = simm3pi(p0(i, 1), p0(i, 2), t0(i), Env.tstep, d);
+        r(i) = simm3pi(p0(i, 1), p0(i, 2), t0(i), Env.tstep);
     else
         r(i) = m3pi(port, baudrate, address{i});
     end

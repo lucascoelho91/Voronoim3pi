@@ -10,12 +10,15 @@ speedL = 0.2;
 speedW = 0.2;
 
 % %fclose(instrfind);
+
+%% connects to the robot
 r = m3pi('/dev/ttyUSB0', 9600, ['40';'AE';'BB';'10']);
 r2 = m3pi('/dev/ttyUSB0', 9600, ['40';'AD';'59';'34']);
 
 
 r.connect();
 
+%% copies the serial port that is already open
 r2.setSerialPort(r.serialPort);
 
 

@@ -17,7 +17,6 @@ classdef simm3pi < handle
         function sendSpeed(r, v, w)
             xv = cos(r.theta);
             yv = sin(r.theta);
-
             r.x = r.x + xv*v*r.timestep;
             r.y = r.y + yv*v*r.timestep;
             r.theta = wrapToPi(r.theta + w*r.timestep);
