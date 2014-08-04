@@ -61,9 +61,7 @@ tstep = Env.tstep;
 
 % Animation?
 if Env.anim == 1
-    hfig = figure()
-    scrsz = get(0,'ScreenSize');
-    set(hfig,'Position',scrsz)
+    figure();
     hold on
     if Env.mov == 1
         set(figure(2), 'Position', [50, 50, 1024, 768]);
