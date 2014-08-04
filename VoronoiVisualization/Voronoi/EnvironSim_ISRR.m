@@ -61,9 +61,7 @@ tstep = Env.tstep;
 
 % Animation?
 if Env.anim == 1
-    hfig = figure()
-    scrsz = get(0,'ScreenSize');
-    set(hfig,'Position',scrsz)
+    figure();
     hold on
     if Env.mov == 1
         set(figure(2), 'Position', [50, 50, 1024, 768]);
@@ -224,10 +222,6 @@ while strcmp(simgo,'run') == 1 && t < tfinal
 %         bot(5).mal=0;
         bot(2).mal=0;
         bot(2).K = zeros(2);
-        bot(5).mal=0;
-        bot(5).K = zeros(2);
-        bot(4).K = zeros(2);
-
     end
 
 end
