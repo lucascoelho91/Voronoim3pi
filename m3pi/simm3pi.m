@@ -1,20 +1,17 @@
 classdef simm3pi < handle
     properties
-        timestep 
-        x
-        y
-        theta
-        
-        l
+        timestep     %timestep considered to simulate the motion of the robot
+        x            %x position
+        y            % y position
+        theta        % angle    
     end
     methods
         
-        function r = simm3pi(xo, yo, tho, ts, lp)
+        function r = simm3pi(xo, yo, tho, ts)
             r.timestep = ts;
             r.x = xo;
             r.y = yo;
             r.theta = tho;
-            r.l = lp;
         end
         
         function sendSpeed(r, v, w)
@@ -29,16 +26,10 @@ classdef simm3pi < handle
         function p = getPose(r)
             p = [r.x, r.y, r.theta];
         end
-        function [v, w] = xyTovw(robot, xdot, ydot)
-            p = [cos(robot.theta),         sin(robot.theta);
-                    -sin(robot.theta)/robot.l, cos(robot.theta)/robot.l]* [xdot; ydot];
-            w = p(2);
-            v = p(1);
-        end
         
-        function p = SetPose(r, xp, yp)
+        function setPose(r, xp, yp)
             r.x = xp;
-            x.y = yp;
+            r.y = yp;
         end
         
 

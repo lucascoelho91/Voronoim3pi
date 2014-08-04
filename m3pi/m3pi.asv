@@ -27,13 +27,23 @@ classdef m3pi < handle
        function sendSpeed(robot, v, w)
            msg = sprintf('%1.2f/%1.2f', v, w);  
            pckg = MakeTxPacket(robot.address, msg);   % builds the data package
-           fwrite(robot.serialPort, hex2dec(pckg), 'uint8'); % sends the package to the robot
+           fwrite(robot.serialPort, hex2dec(pckg), 'uint8'); % writes the
        end
  
        function stop(robot)
            v = 0;
            w = 0;
            robot.sendSpeed(v, w);
+       end
+       
+       function answer = getResp(robot)
+           answer = fscanf(robot.serialPort, 'double');
+       end
+       
+       function setPosition(robot, x, y, theta)
+           robot.x = x;
+           robot.y = y;
+           robot.theta = theta;
        end
    end
    

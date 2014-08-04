@@ -111,7 +111,7 @@ classdef m3piController < handle
             end   
             
             function answer = goalReached(robot)
-                %% checks if the robot has reached the radius around the goal
+                %% checks if the robot has reached the radius around 
                 if norm([robot.errx, robot.erry]) < robot.tol
                     answer = 1;
                 else
