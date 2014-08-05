@@ -62,12 +62,14 @@ tstep = Env.tstep;
 % Animation?
 if Env.anim == 1
     figure();
+    set(gca,'YDir','reverse');
+    set(gca,'XDir','reverse');
     hold on
     if Env.mov == 1
         set(figure(2), 'Position', [50, 50, 1024, 768]);
     end
-    time = title(strcat('time = ', num2str(t,'%.1f'),'s'));
-    set(time,'EraseMode','xor');
+    %time = title(strcat('time = ', num2str(t,'%.1f'),'s'));
+    %set(time,'EraseMode','xor');
     h = zeros(2*n+1);
     txt = zeros(n);
     Cvs = zeros(2*n+1);
@@ -115,7 +117,7 @@ t = ti;
 
 simgo = 'run';
 
-while strcmp(simgo,'run') == 1 && t < tfinal
+while strcmp(simgo,'run') == 1
     
     % Calculate new x,y,wt for each robot
     bot = EnvironDers(bot,Env);
@@ -149,7 +151,7 @@ while strcmp(simgo,'run') == 1 && t < tfinal
     % Update animation
     if Env.anim == 1 %&& t < 10
         hold on
-        title(strcat('time = ', num2str(t,'%.1f'),'s'));
+        %title(strcat('time = ', num2str(t,'%.1f'),'s'));
 
         if Env.shade ~= 0
             for j=1:length(Env.shade)

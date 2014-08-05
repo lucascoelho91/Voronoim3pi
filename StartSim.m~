@@ -13,31 +13,34 @@ clear all;
 addpath m3pi 
 addpath Optitrack
 addpath Voronoi
+addpath '@timetic'
 
+winOS = { 'PCWIN'; 'PCWIN64'};
+unixOS = { 'GLNX86'; 'GLNXA64'; 'MACI64'};
 %% Simulation?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    %SIMULATION = 1;
+    SIMULATION = 1;
 
-    SIMULATION = 0;
+    %SIMULATION = 0;
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %% NUMBER OF ROBOTS
-n  = 3; 
+n  = 5; 
 
 %% size environment
-sizeEnvX = 4;
-sizeEnvY = 3;
+sizeEnvX = 3;
+sizeEnvY = 4;
 
 %% WEIGHTINGS
 wt = ones(1,n);
 % wt(7) = 2;
-% wt(9) = 1.5;
-% wt(2) = 2;
+%wt(9) = 1.5;
+%wt(2) = 2;
 
 %% MALICIOUS
 mal = zeros(1,n);   
@@ -47,20 +50,22 @@ mal = zeros(1,n);
 % 3 = escape
 % 4 = reduced speed (efficiency)
 % 5 = K 
-% mal(5) = 1; 
+%mal(5) = 5; 
 % mal(2) = 4;
 %mal(2) = 5;
+mal(4)=0;
 
 %% efficiency
-eff = ones(1, n);
+eff = ones(1, n);  % efficiency reduces the speed (same as using a K matrix = [-eff 0; 0 -eff]
 
-% K
 K = cell(n,1);
 for i=1:n
     K{i} = zeros(2);
 end
-
-K{2} = [0.8 0;0 0.2];
+% 
+%K{2} = [0.8 0;0 0.2];
+%K{5} = [-0.8 0;0 -0.2];
+%K{4} = [-1.2 0;0 -1.2];
 
 %% SENSOR FUNCTION PARAMETERS
 h = ones(1,n);
@@ -71,28 +76,47 @@ p0(:, 2) = sizeEnvY*rand(n,1);
 t0 = -pi + rand(n, 1)*2*pi;
 
 %% CONTROL GAIN
-kp = 0.2;
-kv = 0.4;
-kw = 0.005;
-d = 0.05;
-tol = 0.2;
+
+if SIMULATION
+    kp = 1;    % kp Voronoi
+    kw = 2;    % kw weightlings controller
+    kv = 2;    % kv point offset
+    kwt = 0.5; % kw point offset
+    d = 0.05;  % d point offset
+    tol = 0.2; % radius 
+
+    maxv = 10; % max linear speed
+    maxw = 10; % max angular speed
+else
+    kp = 1;       % kp Voronoi
+    kw = 0.5;     % kw weightlings controller
+    kv = 2;       % kv point offset
+    kwt = 0.005;  % kw point offset
+    d = 0.05;     % d point offset
+    tol = 0.2;    % radius
+
+    maxv = 0.3;   % max linear speed
+    maxw = 0.3;   % max angular speed
+
+end
 
 
 %% Define the environment
 Env.n = n;
 Env.bdr = [0 0; 0 sizeEnvY; sizeEnvX sizeEnvY; sizeEnvX 0];         % Bounding box
 Env.axes = [min(Env.bdr(:,1)) max(Env.bdr(:,1)) min(Env.bdr(:,2)) max(Env.bdr(:,2))];
-Env.peaks = [1 1; 3 3];                      % Peak of phi function ('gamma')
-Env.strength = [100 ; 100];              % Strength ('alpha')
-Env.offset = [0 ; 0];                     % offset
-Env.stdev = [.2 ; .2]*max(max(Env.bdr));  % Standard Deviation ('beta')
+Env.peaks = [1 1; 2 3];                      % Peak of phi function ('gamma')
+Env.strength = [100, 100];              % Strength ('alpha')
+Env.offset = [0;0];                     % offset
+Env.stdev = [0.2 ; 0.2]*max(max(Env.bdr));  % Standard Deviation ('beta')
 Env.varphi = 0;                         % Variable phi function?
 Env.stol = 0.2;   % barrier
 Env.SIMULATION = SIMULATION;
-Env
+Env.rate = 0.1;
+Env.watch = timetic;
 
 %% Also define the animation constants
-Env.mov = 0;            % Write movi e using vidObj
+Env.mov = 1;            % Write movi e using vidObj
 Env.jpg = 0;            % Write movie as series of jpegs
 Env.mname = 'variableweight';         % Movie name
 Env.anim = 1;           % Animate?
@@ -106,7 +130,7 @@ Env.plot = 1;           % plot cost
 Env.wdot = 1;           % calculate wdot
 
 
-%% Optitrack variable
+%% Optitrack 
 if ~SIMULATION
     Env.frame = 'XYZ+ Plane';
     Env.opti = optiTrackSetup(3000);
@@ -116,18 +140,27 @@ end
 %% Robot connection setup
 if ~SIMULATION
     baudrate = 9600;
-    port = '/dev/ttyUSB0';
     
-    address{1} = ['40';'AE';'BB';'10'];
-    address{2} = ['40';'AD';'59';'34'];
-    address{3} = ['40';'AD';'D1';'3F'];
+    OS = computer;
+    
+    if any( strcmp(OS, winOS) )
+        port = '/COM7';
+    elseif any( strcmp(OS, unixOS) )
+        port = '/dev/ttyUSB0';
+    else
+        
+    end
+        address{1} = ['40';'AE';'BB';'10'];
+        address{2} = ['40';'AD';'59';'34'];
+        address{3} = ['40';'AD';'D1';'3F'];
+    end
     
 end
 
 %% init robots
 for i=1:n
     if SIMULATION
-        r(i) = simm3pi(p0(i, 1), p0(i, 2), t0(i), Env.tstep, d);
+        r(i) = simm3pi(p0(i, 1), p0(i, 2), t0(i), Env.tstep);
     else
         r(i) = m3pi(port, baudrate, address{i});
     end
@@ -135,17 +168,15 @@ end
 
 if ~SIMULATION
     r(1).connect();
-
     for i=2:n
         r(i).setSerialPort(r(1).serialPort);
     end
 end
 
-if ~SIMULATION
-    for i=1:n
-        c(i) = m3piController(r(i), kv, kw, d, tol);
-    end
+for i=1:n
+    c(i) = m3piController(r(i), kv, kwt, d, tol, maxv, maxw);
 end
+
 
 % Distribute variables to the n robots
 bot = struct(); % Create the empty structure
@@ -233,6 +264,13 @@ totalsim.group = group;
 
 %fprintf('totalweight: %f\n', totalweight);
 
+if ~SIMULATION
+    for i=1:n
+        r(i).stop();
+    end
+
+    r(1).disconnect();
+end
 
 end
 

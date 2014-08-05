@@ -61,9 +61,10 @@ tstep = Env.tstep;
 
 % Animation?
 if Env.anim == 1
-    hfig = figure()
-    scrsz = get(0,'ScreenSize');
-    set(hfig,'Position',scrsz)
+    figure()
+    set(gca,'YDir','reverse');
+    set(gca,'XDir','reverse');
+
     hold on
     if Env.mov == 1
         set(figure(2), 'Position', [50, 50, 1024, 768]);
@@ -236,7 +237,7 @@ end
     % Code for movie writer
     colormap('default');
     if Env.mov == 1
-        vidObj = VideoWriter(Env.mname, 'MPEG-4');
+        vidObj = VideoWriter(Env.mname, 'Motion JPEG AVI');
         open(vidObj);
         writeVideo(vidObj, Env.frames);
         close(vidObj);   

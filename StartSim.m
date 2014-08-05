@@ -15,6 +15,12 @@ addpath Optitrack
 addpath Voronoi
 addpath '@timetic'
 
+
+%% usb port for xbee (note that the port names are different in win and unix)
+port = '/dev/ttyUSB0';
+
+winOS = { 'PCWIN'; 'PCWIN64'};
+unixOS = { 'GLNX86'; 'GLNXA64'; 'MACI64'};
 %% Simulation?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -28,7 +34,7 @@ addpath '@timetic'
 
 
 %% NUMBER OF ROBOTS
-n  = 5; 
+n  = 7; 
 
 %% size environment
 sizeEnvX = 3;
@@ -50,8 +56,8 @@ mal = zeros(1,n);
 % 5 = K 
 %mal(5) = 5; 
 % mal(2) = 4;
-%mal(2) = 5;
-mal(4)=3;
+mal(2) = 5;
+mal(4)= 5;
 
 %% efficiency
 eff = ones(1, n);  % efficiency reduces the speed (same as using a K matrix = [-eff 0; 0 -eff]
@@ -61,9 +67,9 @@ for i=1:n
     K{i} = zeros(2);
 end
 % 
-%K{2} = [0.8 0;0 0.2];
+K{2} = [0.8 0;0 0.2];
 %K{5} = [-0.8 0;0 -0.2];
-%K{4} = [-1.2 0;0 -1.2];
+K{4} = [-.8 0;0 -.8];
 
 %% SENSOR FUNCTION PARAMETERS
 h = ones(1,n);
@@ -77,7 +83,7 @@ t0 = -pi + rand(n, 1)*2*pi;
 
 if SIMULATION
     kp = 1;    % kp Voronoi
-    kw = 2;    % kw weightlings controller
+    kw = 0.2;    % kw weightlings controller
     kv = 2;    % kv point offset
     kwt = 0.5; % kw point offset
     d = 0.05;  % d point offset
@@ -105,10 +111,10 @@ Env.bdr = [0 0; 0 sizeEnvY; sizeEnvX sizeEnvY; sizeEnvX 0];         % Bounding b
 Env.axes = [min(Env.bdr(:,1)) max(Env.bdr(:,1)) min(Env.bdr(:,2)) max(Env.bdr(:,2))];
 Env.peaks = [1 1; 2 3];                      % Peak of phi function ('gamma')
 Env.strength = [100, 100];              % Strength ('alpha')
-Env.offset = [0;0];                     % offset
+Env.offset = [0; 0];                     % offset
 Env.stdev = [0.2 ; 0.2]*max(max(Env.bdr));  % Standard Deviation ('beta')
 Env.varphi = 0;                         % Variable phi function?
-Env.stol = 0.2;   % barrier
+Env.stol = 0.05;   % barrier
 Env.SIMULATION = SIMULATION;
 Env.rate = 0.1;
 Env.watch = timetic;
@@ -120,8 +126,8 @@ Env.mname = 'variableweight';         % Movie name
 Env.anim = 1;           % Animate?
 Env.frames = [];        % Movie frames (for vidObj)
 Env.tstep = .1;         % Time step size
-Env.tspan = [0 50];     % Time span
-Env.tplot = 50;         % Time to plot (not necessarily entire span)
+Env.tspan = [0 100];     % Time span
+Env.tplot = 100;         % Time to plot (not necessarily entire span)
 Env.res = 5;            % Resolution for integration
 Env.shade = 0;          % Robot to shade
 Env.plot = 1;           % plot cost
@@ -138,8 +144,15 @@ end
 %% Robot connection setup
 if ~SIMULATION
     baudrate = 9600;
-    port = '/dev/ttyUSB0';
-    
+%     OS = computer;
+%     
+%     if any( strcmp(OS, winOS) )
+%         port = '/COM7';
+%     elseif any( strcmp(OS, unixOS) )
+%         port = '/dev/ttyUSB0';
+%     else
+%         error('OS not recognized')
+%     end
     address{1} = ['40';'AE';'BB';'10'];
     address{2} = ['40';'AD';'59';'34'];
     address{3} = ['40';'AD';'D1';'3F'];
