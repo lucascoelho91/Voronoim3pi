@@ -6,9 +6,9 @@ frame = 'XYZ+ Plane';
 opti = optiTrackSetup(3000);
 %fclose(instrfind);
 %% create robot instance
-id_robot = 2;
-r = m3pi('/dev/ttyUSB0', 9600, ['40';'AE';'BB';'10']);
-r = m3pi('/dev/ttyUSB0', 9600, ['40';'AD';'59';'34']);
+id_robot = 1;
+r = m3pi('/dev/ttyUSB0', 9600, ['40';'AD';'58';'EE']);
+%r = m3pi('/dev/ttyUSB0', 9600, ['40';'B4';'53';'FD']);
 
 % maybe you will need to run this >> fclose(instrfind)
 r.connect();
@@ -63,7 +63,7 @@ for i=1:ngoals
         %opti.pose
         controller.setPose(opti.pose(1, id_robot), opti.pose(2, id_robot),  opti.pose(6, id_robot));
         if(toc(controltic) > rate)
-            controller.controlSpeedDiff();
+            controller.controlSpeed();
             tic(controltic);
         end
 

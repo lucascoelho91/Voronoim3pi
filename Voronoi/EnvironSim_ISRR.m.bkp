@@ -62,9 +62,6 @@ tstep = Env.tstep;
 % Animation?
 if Env.anim == 1
     figure()
-    %set(gca,'YDir','reverse');
-    %set(gca,'XDir','reverse');
-
     hold on
     if Env.mov == 1
         set(figure(2), 'Position', [50, 50, 1024, 768]);
@@ -119,7 +116,7 @@ t = ti;
 simgo = 'run';
 
 while strcmp(simgo,'run') == 1 && t < tfinal
-    tic(Env.watch)
+    
     % Calculate new x,y,wt for each robot
     bot = EnvironDers(bot,Env);
     
@@ -230,7 +227,6 @@ while strcmp(simgo,'run') == 1 && t < tfinal
         bot(4).K = zeros(2);
 
     end
-    
 
 end
 
@@ -238,7 +234,7 @@ end
     % Code for movie writer
     colormap('default');
     if Env.mov == 1
-        vidObj = VideoWriter(Env.mname, 'Motion JPEG AVI');
+        vidObj = VideoWriter(Env.mname, 'MPEG-4');
         open(vidObj);
         writeVideo(vidObj, Env.frames);
         close(vidObj);   

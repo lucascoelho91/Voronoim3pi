@@ -1,7 +1,6 @@
 % Close all existing ports (in case it was improperly closed) 
 
 %fclose(instrfind); 
-
 clear all
 close all
 clc
@@ -12,14 +11,15 @@ speedW = 0.2;
 % %fclose(instrfind);
 
 %% connects to the robot
-r = m3pi('/dev/ttyUSB0', 9600, ['40';'AE';'BB';'10']);
-r2 = m3pi('/dev/ttyUSB0', 9600, ['40';'AD';'59';'34']);
-
+r = m3pi('/dev/ttyUSB0', 9600, ['40';'AD';'58';'EE']);
+r2 = m3pi('/dev/ttyUSB0', 9600, ['40';'B4';'53';'FD']);
+r3 = m3pi('/dev/ttyUSB0', 9600, ['40';'86';'B5';'15']);
 
 r.connect();
 
 %% copies the serial port that is already open
 r2.setSerialPort(r.serialPort);
+r3.setSerialPort(r.serialPort);
 
 
 %Print a command
@@ -49,11 +49,14 @@ while(c ~= 'p')
         rc = r;
     elseif c== '2' 
         rc = r2;
+    elseif c== '3' 
+        rc = r3;
     end
 end
         
 r.stop();
 r2.stop();
+r3.stop();
 r.disconnect();
 
 fclose(instrfind);        
