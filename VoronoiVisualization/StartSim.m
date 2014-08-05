@@ -16,15 +16,16 @@ addpath Voronoi
 
 %% Simulation?
 %%%%%%%%%%%%%%%%%%%%%%%%%%
-    SIMULATION = 1;
+    SIMULATION = 0;
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %% NUMBER OF ROBOTS
-n  = 3; 
+n  = 8; 
 
 %% size environment
-sizeEnv = 6;
+sizeEnvx = 5;
+sizeEnvy = 4;
 
 %% WEIGHTINGS
 wt = ones(1,n);
@@ -42,7 +43,7 @@ mal = zeros(1,n);
 % 5 = K 
 % mal(5) = 1; 
 % mal(2) = 4;
-mal(2) = 5;
+%mal(2) = 5;
 
 %% efficiency
 eff = ones(1, n);
@@ -59,8 +60,10 @@ K{2} = [0.8 0;0 0.2];
 h = ones(1,n);
 
 %% INITIAL POSITIONS
-p0 = sizeEnv*rand(n,2);
-t0 = -pi + rand(n, 1)*2*pi;
+if SIMULATION
+    p0 = sizeEnv*rand(n,2);
+    t0 = -pi + rand(n, 1)*2*pi;
+end
 
 %% CONTROL GAIN
 kp = 1;
@@ -72,7 +75,7 @@ tol = 0.2;
 
 %% Define the environment
 Env.n = n;
-Env.bdr = [0 0; 0 sizeEnv; sizeEnv sizeEnv; sizeEnv 0];         % Bounding box
+Env.bdr = [0 0; 0 sizeEnvy; sizeEnvx sizeEnvy; sizeEnvx 0];         % Bounding box
 Env.axes = [min(Env.bdr(:,1)) max(Env.bdr(:,1)) min(Env.bdr(:,2)) max(Env.bdr(:,2))];
 Env.peaks = [1 1; 5 5];                      % Peak of phi function ('gamma')
 Env.strength = [100 ; 100];              % Strength ('alpha')
@@ -130,9 +133,7 @@ bot = struct(); % Create the empty structure
 %% Robot initialization
 for i = 1:n
     bot(i).id = i;              % Index
-    bot(i).x = p0(i,1);         % x-Position
-    bot(i).y = p0(i,2);         % y-Postion
-    bot(i).theta = t0(i);       % theta
+    
     bot(i).xdot = 0;            % x-Velocity
     bot(i).ydot = 0;            % y-Velocity
     bot(i).wt = wt(i);          % Weighting
@@ -161,9 +162,13 @@ for i = 1:n
 %     bot(i).controller = c(i);
     
     if ~SIMULATION
-        bot(i).x = opti.pose(1, i);
-        bot(i).y = opti.pose(2, i);
-        bot(i).theta = opti.pose(6, i);
+        bot(i).x = Env.opti.pose(1, i);
+        bot(i).y = Env.opti.pose(2, i);
+        bot(i).theta = Env.opti.pose(6, i);
+    else
+        bot(i).x = p0(i,1);         % x-Position
+        bot(i).y = p0(i,2);         % y-Postion
+        bot(i).theta = t0(i);       % theta
     end
 %     bot(i).controller.setPose(bot(i).x, bot(i).y, bot(i).theta);
 end
