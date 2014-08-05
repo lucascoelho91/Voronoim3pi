@@ -15,6 +15,8 @@ addpath Optitrack
 addpath Voronoi
 addpath '@timetic'
 
+winOS = { 'PCWIN'; 'PCWIN64'};
+unixOS = { 'GLNX86'; 'GLNXA64'; 'MACI64'};
 %% Simulation?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -51,7 +53,7 @@ mal = zeros(1,n);
 %mal(5) = 5; 
 % mal(2) = 4;
 %mal(2) = 5;
-mal(4)=3;
+mal(4)=0;
 
 %% efficiency
 eff = ones(1, n);  % efficiency reduces the speed (same as using a K matrix = [-eff 0; 0 -eff]
@@ -138,11 +140,18 @@ end
 %% Robot connection setup
 if ~SIMULATION
     baudrate = 9600;
-    port = '/dev/ttyUSB0';
     
-    address{1} = ['40';'AE';'BB';'10'];
-    address{2} = ['40';'AD';'59';'34'];
-    address{3} = ['40';'AD';'D1';'3F'];
+    OS = computer;
+    
+    if any( strcmp(OS, winOS) )
+        port = '/COM7';
+    else if any( strcmp(OS, unixOS) )
+        port = '/dev/ttyUSB0';
+    end
+        address{1} = ['40';'AE';'BB';'10'];
+        address{2} = ['40';'AD';'59';'34'];
+        address{3} = ['40';'AD';'D1';'3F'];
+    end
     
 end
 
