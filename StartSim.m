@@ -15,6 +15,10 @@ addpath Optitrack
 addpath Voronoi
 addpath '@timetic'
 
+
+%% usb port for xbee (note that the port names are different in win and unix)
+port = '/dev/ttyUSB0';
+
 winOS = { 'PCWIN'; 'PCWIN64'};
 unixOS = { 'GLNX86'; 'GLNXA64'; 'MACI64'};
 %% Simulation?
@@ -141,17 +145,21 @@ end
 if ~SIMULATION
     baudrate = 9600;
     
-    OS = computer;
     
-    if any( strcmp(OS, winOS) )
-        port = '/COM7';
-    else if any( strcmp(OS, unixOS) )
-        port = '/dev/ttyUSB0';
-    end
-        address{1} = ['40';'AE';'BB';'10'];
-        address{2} = ['40';'AD';'59';'34'];
-        address{3} = ['40';'AD';'D1';'3F'];
-    end
+    
+    
+%     OS = computer;
+%     
+%     if any( strcmp(OS, winOS) )
+%         port = '/COM7';
+%     elseif any( strcmp(OS, unixOS) )
+%         port = '/dev/ttyUSB0';
+%     else
+%         error('OS not recognized')
+%     end
+    address{1} = ['40';'AE';'BB';'10'];
+    address{2} = ['40';'AD';'59';'34'];
+    address{3} = ['40';'AD';'D1';'3F'];
     
 end
 
